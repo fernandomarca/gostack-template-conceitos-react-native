@@ -23,18 +23,36 @@ export default function App() {
 
   async function handleLikeRepository(id) {
 
-    await api.post(`/repositories/${id}/like`);
+    const response = await api.post(`/repositories/${id}/like`);
 
-    const repository = repositories.find(repository => repository.id === id);
+    const likedRepository = response.data;//retorna o repositorio com like do back-end
 
-    const newRepository = {
-      ...repository,
-      likes: repository["likes"] + 1,
-    };
+    /**
+     * Map para sobreescrever o repositorio que vem do back-end atualizado, 
+     * no lugar do repositorio presente na variavel de ESTADO.
+     * O Map retorna um novo Array com todos os repositorios atualizados!!!
+     */
+    const repositoriesUpdated = repositories.map(repository => {
+      if (repository.id === id) {
+        return likedRepository;
+      } else {
+        return repository;
+      }
+    });
 
-    const repositoriesFilter = repositories.filter(repository => repository.id !== id);
+    //console.log(repositoriesUpdated);
+    setRepositories(repositoriesUpdated);
 
-    setRepositories([...repositoriesFilter, newRepository]);
+    // const repository = repositories.find(repository => repository.id === id);
+
+    // const newRepository = {
+    //   ...repository,
+    //   likes: repository["likes"] + 1,
+    // };
+
+    // const repositoriesFilter = repositories.filter(repository => repository.id !== id);
+
+    // setRepositories([...repositoriesFilter, newRepository]);
   }
 
   return (
